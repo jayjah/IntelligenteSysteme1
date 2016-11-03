@@ -1,144 +1,185 @@
 /**
- * This class represent a Box from the Gym.
- * Every Visitor gets a Box when he comes to the Gym.
+ * This class represent a Box from the Gym. Every Visitor gets a Box when he
+ * comes to the Gym.
+ * 
  * @author Markus, Kim
- *
+ * 
  */
 public class Box {
 
-	//Enum
-	public enum BoxStatus {free,active,taken};
-	
 	/**
 	 * Defines the status of the box
 	 */
-	public BoxStatus status;
-	
+	private BoxStatus status;
+
 	/**
 	 * Holds the next box
 	 */
-	public Box nextBox;
-	
-	public Box prevBox;
+	private Box right;
 
-	public Box above;
-	
-	public Box below;
-	
-	public Box diaaboveright;
-	
-	public Box diaaboveleft;
-	
-	public Box diabelowright;
-	
-	public Box diabelowleft;
-	
+	/**
+	 * Holds the previews box
+	 */
+	private Box left;
+
+	/**
+	 * Holds the box above this box
+	 */
+	private Box above;
+
+	/**
+	 * Holds the box below this box
+	 */
+	private Box below;
+
 	/**
 	 * Id of the Box
 	 */
-	public int id;
-	
+	private int id;
+
 	/**
 	 * Constructor, initialize all attributes
-	 * @param id Id of the box
+	 * 
+	 * @param id
+	 *            Id of the box
 	 */
 	public Box(int id, BoxStatus status) {
 		this.id = id;
 		this.status = status;
 	}
-	
+
 	/**
 	 * Getter
+	 * 
 	 * @return isFree
 	 */
 	public BoxStatus getStatus() {
 		return status;
 	}
-	
+
 	/**
 	 * Setter
-	 * @param isFree to set isFree
+	 * 
+	 * @param isFree
+	 *            to set isFree
 	 */
 	public void setStatus(BoxStatus status) {
 		this.status = status;
 	}
-	
+
 	/**
 	 * Getter
+	 * 
 	 * @return id
 	 */
 	public int getId() {
 		return id;
 	}
-	
+
 	/**
 	 * Getter
+	 * 
 	 * @return prevBox
 	 */
 	public Box getPrevBox() {
-		return prevBox;
+		return left;
 	}
 
 	/**
 	 * Setter
+	 * 
 	 * @param prevBox
 	 */
 	public void setPrevBox(Box prevBox) {
-		this.prevBox = prevBox;
+		this.left = prevBox;
 	}
-	
+
+	/**
+	 * Getter
+	 * 
+	 * @return nextBox
+	 */
 	public Box getNextBox() {
-		return nextBox;
+		return right;
 	}
 
+	/**
+	 * Setter
+	 * 
+	 * @param nextBox
+	 */
 	public void setNextBox(Box nextBox) {
-		this.nextBox = nextBox;
+		this.right = nextBox;
 	}
 
+	/**
+	 * Getter
+	 * 
+	 * @return above.right
+	 */
 	public Box getDiaaboveright() {
-		return diaaboveright;
+		return above.right;
 	}
 
-	public void setDiaaboveright(Box diaaboveright) {
-		this.diaaboveright = diaaboveright;
-	}
-
+	/**
+	 * Getter
+	 * 
+	 * @return above.left
+	 */
 	public Box getDiaaboveleft() {
-		return diaaboveleft;
+		return above.left;
 	}
 
-	public void setDiaaboveleft(Box diaaboveleft) {
-		this.diaaboveleft = diaaboveleft;
-	}
-
+	/**
+	 * Getter
+	 * 
+	 * @return below.right
+	 */
 	public Box getDiabelowright() {
-		return diabelowright;
+		return below.right;
 	}
 
-	public void setDiabelowright(Box diabelowright) {
-		this.diabelowright = diabelowright;
-	}
-
+	/**
+	 * Getter
+	 * 
+	 * @return below.left
+	 */
 	public Box getDiabelowleft() {
-		return diabelowleft;
+		return below.left;
 	}
 
-	public void setDiabelowleft(Box diabelowleft) {
-		this.diabelowleft = diabelowleft;
-	}
-
+	/**
+	 * Getter
+	 * 
+	 * @return above
+	 */
 	public Box getAbove() {
 		return above;
 	}
 
+	/**
+	 * Setter
+	 * 
+	 * @param above
+	 */
 	public void setAbove(Box above) {
 		this.above = above;
 	}
 
+	/**
+	 * Getter
+	 * 
+	 * @return below
+	 */
 	public Box getBelow() {
 		return below;
 	}
 
+	/**
+	 * Setter
+	 * 
+	 * @param below
+	 */
 	public void setBelow(Box below) {
 		this.below = below;
 	}
