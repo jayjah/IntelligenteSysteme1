@@ -17,7 +17,7 @@ public class Main {
 		// number of days; how often the focus person'll visit the gym 
 		short days = 10;
 
-		// get an array of all
+		// get an array of all durations
 		int[] allvisits = new int[50127];
 		BufferedReader reader;
 		int counter = 0;
@@ -46,6 +46,8 @@ public class Main {
 		Controller controll = new Controller(possibilityOfaVisitor, boxes,
 				timeSlotsperDay, days, allvisits);
 		controll.letTheSimulationRun();
+		
+		System.out.print(controll.printAllFocusVisitors());
 		
 		// Endpoint of simulation
 		long endPoint = System.currentTimeMillis();

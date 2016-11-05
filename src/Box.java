@@ -47,6 +47,14 @@ public class Box {
 		this.id = id;
 		this.status = status;
 	}
+	
+	/**
+	 * Null Constructor
+	 * @param id = 9999 (null Value)
+	 */
+	public Box(int id) {
+		this.id = id;
+	}
 
 	/**
 	 * Getter
@@ -118,7 +126,7 @@ public class Box {
 	 * @return above.right
 	 */
 	public Box getDiaaboveright() {
-		return above.right;
+		return above.getNextBox();
 	}
 
 	/**
@@ -127,7 +135,7 @@ public class Box {
 	 * @return above.left
 	 */
 	public Box getDiaaboveleft() {
-		return above.left;
+		return above.getPrevBox();
 	}
 
 	/**
@@ -136,7 +144,7 @@ public class Box {
 	 * @return below.right
 	 */
 	public Box getDiabelowright() {
-		return below.right;
+		return below.getNextBox();
 	}
 
 	/**
@@ -145,7 +153,7 @@ public class Box {
 	 * @return below.left
 	 */
 	public Box getDiabelowleft() {
-		return below.left;
+		return below.getPrevBox();
 	}
 
 	/**

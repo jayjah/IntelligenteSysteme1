@@ -53,7 +53,7 @@ public class Controller {
 		this.timeSlotsperDay = timeslots;
 		this.days = days;
 		this.allVisits = visits;
-		this.gym = new Gym(boxes);
+		this.gym = new Gym(boxes,days);
 	}
 
 	/**
@@ -71,71 +71,187 @@ public class Controller {
 		for (int day = 0; day < this.days; day++) {
 			int idfornextuser = 0;
 			// simulation for each timeslot
-			for (int slotsperday = 0; slotsperday < this.timeSlotsperDay; slotsperday++) {
+			for (int currentslot = 0; currentslot < this.timeSlotsperDay; currentslot++) {
 				double nextvisitor = random.nextDouble();
 				// weather nextvisitor is a visitor or not
 				if (nextvisitor <= 0.1) {
 					Box boxfornextvisitor = getNextRandomBox();
-					int durationfornextvisitor = getNextRandomDurationofVisitor();
-					boolean isfocus = isThisVisitoronFocus();
-					Visitor visitor = new Visitor(idfornextuser,
-							boxfornextvisitor, durationfornextvisitor, isfocus);
-					gym.getAllVisitors().add(visitor);
-					idfornextuser++;
-
-					// Prints
-					System.out.println("On Day: " + day + "; On TimeSlot: "
-							+ slotsperday + "; New Visitor: "
-							+ visitor.toString());
-					System.out.println("Length of Blocked Box List: "
-							+ gym.getAllBlockedBoxes().size());
-					System.out.println("Length of Free Box List: "
-							+ gym.getAllFreeBoxes().size());
-					int sizeofboth = gym.getAllBlockedBoxes().size()
-							+ gym.getAllFreeBoxes().size();
-					System.out.println("Length of Box is: " + sizeofboth
-							+ " and should be: " + allBoxes);
+					if (boxfornextvisitor != null) {
+						int durationfornextvisitor = getNextRandomDurationofVisitor();
+						boolean isfocus = isThisVisitoronFocus(currentslot);
+						Visitor visitor = new Visitor(idfornextuser,
+								boxfornextvisitor, durationfornextvisitor,
+								isfocus);
+						gym.getAllVisitors().add(visitor);
+						if (visitor.getFocus()) 
+							gym.setFocusVisitorwasHere(true);
+						idfornextuser++;
+						// Prints
+//						if (visitor.getFocus()) 
+//							System.out.println(visitor);
+//						System.out.println("On Day: " + day + "; On TimeSlot: "
+//								+ currentslot + "; New Visitor: "
+//								+ visitor.toString());
+//						System.out.println("Length of Blocked Box List: "
+//								+ gym.getAllBlockedBoxes().size());
+//						System.out.println("Length of Free Box List: "
+//								+ gym.allFreeBoxes().size());
+//						int sizeofboth = gym.getAllBlockedBoxes().size()
+//								+ gym.allFreeBoxes().size();
+//						System.out.println("Length of Box is: " + sizeofboth
+//								+ " and should be: " + allBoxes);
+					}
 				}
 				simulateTimeinGym();
 			}
 			gym.afterDay();
 		}
 	}
-	
+
 	/**
-	 * This Method simulates the time in the gym
-	 * The duration of every visitor decrements for 1 by calling
-	 * If the Visitor got the focus then ...
+	 * This Method simulates the time in the gym The duration of every visitor
+	 * decrements for 1 by calling If the Visitor got the focus then ...
 	 */
-	//TODO BoxStatus of every Visitor must be changed from active to taken after 5 "minutes"
 	private void simulateTimeinGym() {
-		for (int i = 0; i< gym.getAllVisitors().size(); i++) {
-			if (gym.getAllVisitors().get(i).getDuration() == 5) {
-				gym.getAllVisitors().get(i).getOwnBox().setStatus(BoxStatus.active);
+		for (int i = 0; i < gym.getAllVisitors().size(); i++) {
+			// after first five minutes of visitor
+			if (gym.getAllVisitors().get(i).getOriginDuration()
+					- gym.getAllVisitors().get(i).getDuration() == 30) {
+				gym.getAllVisitors().get(i).getOwnBox()
+						.setStatus(BoxStatus.taken);
+				if (gym.getAllVisitors().get(i).getFocus() && gym.getAllVisitors().get(i).getTempCollisionCounter() > 0) {
+					gym.getAllVisitors().get(i).incrementCollision();
+					gym.getAllVisitors().get(i).resetTempCollisionCounter();
+				}
 			}
+			// last five minutes of visitor
+			if (gym.getAllVisitors().get(i).getDuration() == 30) {
+				gym.getAllVisitors().get(i).getOwnBox()
+						.setStatus(BoxStatus.active);
+			}
+			// last 10seconds of visitor
 			if (gym.getAllVisitors().get(i).getDuration() == 1) {
-				gym.getAllVisitors().get(i).getOwnBox().setStatus(BoxStatus.free);
-				gym.getAllBlockedBoxes().remove(gym.getAllVisitors().get(i).getOwnBox());
+				gym.getAllVisitors().get(i).getOwnBox()
+						.setStatus(BoxStatus.free);
+				if (gym.getAllVisitors().get(i).getFocus() && gym.getAllVisitors().get(i).getTempCollisionCounter() > 0) {
+					gym.getAllVisitors().get(i).incrementCollision();
+				}
+				if (gym.getAllVisitors().get(i).getFocus()) {
+					gym.getAllFocusVisitors().add(gym.getAllVisitors().get(i));
+				}
+				gym.getAllBlockedBoxes().remove(
+						gym.getAllVisitors().get(i).getOwnBox());
 				gym.getAllFreeBoxes().add(gym.getAllVisitors().get(i).getOwnBox());
 				gym.getAllVisitors().remove(i);
 			} else {
-				if (gym.getAllVisitors().get(i).getFocus() && gym.getAllVisitors().get(i).getOwnBox().getStatus() == BoxStatus.active) {
-					//TODO if a collision happens, then collision counter must be increment
+				// if focus is true and boxstatus == active
+				if (gym.getAllVisitors().get(i).getFocus()
+						&& gym.getAllVisitors().get(i).getOwnBox().getStatus() == BoxStatus.active) {
+					checkAndsetCollision(gym.getAllVisitors().get(i));
+					gym.getAllVisitors().get(i).decrementDuration();
 				} else {
-					gym.getAllVisitors().get(i).setDuration(gym.getAllVisitors().get(i).getDuration()-1);
+					gym.getAllVisitors().get(i).decrementDuration();
 				}
 			}
 		}
 	}
-
-	// TODO Implement if this is the Visitor nearly 15h or not
+	
+	//TODO fix NullPointerException, maybe causes because the initialization of the
+	// neighbor boxes failed, see in Gym.initializeBoxes()
 	/**
-	 * Returns a boolean, weather this Visitor got the focus or not
-	 * 
-	 * @return
+	 * Check if a neighbour box of this visitor got a the BoxStatus.active
+	 * @param visitor 
 	 */
-	private boolean isThisVisitoronFocus() {
-		return false;
+	private void checkAndsetCollision(Visitor visitor) {
+		int nullBox = 9999;
+		if (visitor.getOwnBox().getAbove().getId() != nullBox) {
+			if (visitor.getOwnBox().getAbove()
+					.getStatus() == BoxStatus.active) {
+				visitor.incrementTempCollisionCounter();
+			}
+		}
+		if (visitor.getOwnBox().getBelow().getId() != nullBox) {
+			if (visitor.getOwnBox().getBelow()
+					.getStatus() == BoxStatus.active) {
+				visitor.incrementTempCollisionCounter();
+			}
+		}
+//		if (visitor.getOwnBox()
+//				.getDiaaboveleft().getId() != nullBox) {
+//			if (visitor.getOwnBox()
+//					.getDiaaboveleft().getStatus() == BoxStatus.active) {
+//				visitor.incrementTempCollisionCounter();
+//			}
+//		}
+//		if (visitor.getOwnBox()
+//				.getDiaaboveright().getId() != nullBox) {
+//			if (visitor.getOwnBox()
+//					.getDiaaboveright().getStatus() == BoxStatus.active) {
+//				visitor.incrementTempCollisionCounter();
+//			}
+//		}
+//		if (visitor.getOwnBox()
+//				.getDiabelowleft().getId() != nullBox) {
+//			if (visitor.getOwnBox()
+//					.getDiabelowleft().getStatus() == BoxStatus.active) {
+//				visitor.incrementTempCollisionCounter();
+//			}
+//		}
+//		if (visitor.getOwnBox()
+//				.getDiabelowright().getId() != nullBox) {
+//			if (visitor.getOwnBox()
+//					.getDiabelowright().getStatus() == BoxStatus.active) {
+//				visitor.incrementTempCollisionCounter();
+//			}
+//		}
+		if (visitor.getOwnBox().getNextBox().getId() != nullBox) {
+			if (visitor.getOwnBox()
+					.getNextBox().getStatus() == BoxStatus.active) {
+				visitor.incrementTempCollisionCounter();
+			}
+		}
+		if (visitor.getOwnBox().getPrevBox().getId() != nullBox) {
+			if (visitor.getOwnBox()
+					.getPrevBox().getStatus() == BoxStatus.active) {
+				visitor.incrementTempCollisionCounter();
+			}
+		}
+	}
+
+	/**
+	 * Returns a boolean, weather this Visitor got the focus or not The first
+	 * person between 14:50 and 15:10 will be the focus visitor If there is no
+	 * focus set between 14:50 and 15:10, then it will be the next visitor
+	 * 
+	 * @return boolean
+	 */
+	private boolean isThisVisitoronFocus(int currentTimeSlot) {
+		boolean focusexist = false;
+		for (Visitor visitor : gym.getAllVisitors()) {
+			if (visitor.getFocus() == true)
+				focusexist = true;
+		}
+		if (focusexist == false && !gym.getFocusVisitorwasHere()) {
+			// between 14:50 and 15:10
+			if (timeSlotsperDay / 2 - 60 < currentTimeSlot
+					&& timeSlotsperDay / 2 + 60 > currentTimeSlot)
+				return true;
+			// first person after 15:10
+			if (timeSlotsperDay / 2 + 60 < currentTimeSlot)
+				return true;
+			return false;
+		} else
+			return false;
+	}
+
+	// TODO Implement an own idea to chose the perfect box for the current
+	// visitor
+	/**
+	 * 
+	 * @return Box
+	 */
+	private Box getNextBox() {
+		return null;
 	}
 
 	/**
@@ -146,27 +262,17 @@ public class Controller {
 	 * @return Box
 	 */
 	private Box getNextRandomBox() {
-		boolean boxisChosen = false;
-		while (boxisChosen == false) {
+		if (gym.getAllFreeBoxes().size() > 0) {
 			int maybenextbox = random.nextInt(allBoxes);
-			for (int i = 0; i<gym.getAllFreeBoxes().size(); i++) {
+			for (int i = 0; i < gym.getAllFreeBoxes().size(); i++) {
 				if (gym.getAllFreeBoxes().get(i).getId() == maybenextbox) {
-					boxisChosen = true;
 					gym.getAllFreeBoxes().get(i).setStatus(BoxStatus.active);
 					gym.getAllBlockedBoxes().add(gym.getAllFreeBoxes().get(i));
+					Box randomBox = gym.getAllFreeBoxes().get(i);
 					gym.getAllFreeBoxes().remove(i);
-					return gym.getAllBlockedBoxes().getLast();
+					return randomBox;
 				}
 			}
-//			for (Box box : gym.getAllFreeBoxes()) {
-//				if (box.getId() == maybenextbox) {
-//					boxisChosen = true;
-//					gym.getAllBlockedBoxes().add(box);
-//					gym.getAllFreeBoxes().remove(box);
-//					box.setStatus(BoxStatus.active);
-//					return box;
-//				}
-//			}
 		}
 		return null;
 	}
@@ -179,5 +285,13 @@ public class Controller {
 	private int getNextRandomDurationofVisitor() {
 		int duration = random.nextInt(allVisits.length);
 		return allVisits[duration];
+	}
+	
+	/**
+	 * Retrieves  allFocusVisitors in a string; Use for printing
+	 * @return allFocusVisitors
+	 */
+	public String printAllFocusVisitors() {
+		return gym.printAllFocusVisitors();
 	}
 }

@@ -17,9 +17,14 @@ public class Visitor {
 	private Box ownBox;
 
 	/**
-	 * Duration of how long the Visitor will be in the gym
+	 * Duration of how long the Visitor'll be in gym, this'll be decrement
 	 */
 	private int duration;
+	
+	/**
+	 * Duration of how long the Visitor'll be in gym
+	 */
+	private int originDuration;
 
 	/**
 	 * Weather it's the focusperson or not
@@ -30,6 +35,16 @@ public class Visitor {
 	 * Collision counter
 	 */
 	private int collision;
+	
+	/**
+	 * How often a collision hapens during the first and last 5 minutes
+	 */
+	private int tempCollisionCounter;
+	
+	/**
+	 * Factor to get timeslots from minutes
+	 */
+	private static short minutesTotimeslots = 6;
 
 	/**
 	 * Constructor
@@ -40,9 +55,34 @@ public class Visitor {
 	public Visitor(int id, Box box, int duration, boolean focus) {
 		this.id = id;
 		this.ownBox = box;
-		this.duration = duration;
+		this.duration = duration*minutesTotimeslots;
+		this.originDuration = duration*minutesTotimeslots;
 		this.gotTheFocus = focus;
 		this.collision = 0;
+		this.tempCollisionCounter = 0;
+	}
+	
+	/**
+	 * Getter
+	 * 
+	 * @return tempCollisionCounter
+	 */
+	public int getTempCollisionCounter() {
+		return tempCollisionCounter;
+	}
+	
+	/**
+	 * Increments tempCollisionCounter
+	 */
+	public void incrementTempCollisionCounter() {
+		this.tempCollisionCounter++;
+	}
+	
+	/**
+	 * Reset tempCollisionCounter to intial value
+	 */
+	public void resetTempCollisionCounter() {
+		this.tempCollisionCounter = 0;
 	}
 
 	/**
@@ -82,12 +122,21 @@ public class Visitor {
 	}
 	
 	/**
-	 * Setter
+	 * Getter
+	 * 
+	 * @return originDuration
+	 */
+	public int getOriginDuration() {
+		return originDuration;
+	}
+	
+	/**
+	 * Decrement duration
 	 * 
 	 * @param duration
 	 */
-	public void setDuration(int duration) {
-		this.duration = duration;
+	public void decrementDuration() {
+		this.duration--;
 	}
 	
 	/**
