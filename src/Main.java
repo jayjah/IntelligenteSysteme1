@@ -47,9 +47,12 @@ public class Main {
 				timeSlotsperDay, days, allvisits);
 		controll.letTheSimulationRun();
 		
+		System.out.println(controll.printAllFocusVisitors());
+		System.out.println("Added all Collisions: " + controll.averageOfCollision());
+		
 		// Endpoint of simulation
 		long endPoint = System.currentTimeMillis();
-		System.out.println("Ended at: " + endPoint);
+		System.out.println("\nEnded at: " + endPoint);
 		long difference = endPoint - startPoint;
 		System.out.println("Differnece between Startpoint and Endpoint (in millisec): " + difference);
 	}

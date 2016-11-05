@@ -176,34 +176,34 @@ public class Controller {
 				visitor.incrementTempCollisionCounter();
 			}
 		}
-//		if (visitor.getOwnBox()
-//				.getDiaaboveleft().getId() != nullBox) {
-//			if (visitor.getOwnBox()
-//					.getDiaaboveleft().getStatus() == BoxStatus.active) {
-//				visitor.incrementTempCollisionCounter();
-//			}
-//		}
-//		if (visitor.getOwnBox()
-//				.getDiaaboveright().getId() != nullBox) {
-//			if (visitor.getOwnBox()
-//					.getDiaaboveright().getStatus() == BoxStatus.active) {
-//				visitor.incrementTempCollisionCounter();
-//			}
-//		}
-//		if (visitor.getOwnBox()
-//				.getDiabelowleft().getId() != nullBox) {
-//			if (visitor.getOwnBox()
-//					.getDiabelowleft().getStatus() == BoxStatus.active) {
-//				visitor.incrementTempCollisionCounter();
-//			}
-//		}
-//		if (visitor.getOwnBox()
-//				.getDiabelowright().getId() != nullBox) {
-//			if (visitor.getOwnBox()
-//					.getDiabelowright().getStatus() == BoxStatus.active) {
-//				visitor.incrementTempCollisionCounter();
-//			}
-//		}
+		if (visitor.getOwnBox()
+				.getDiaaboveleft() != null) {
+			if (visitor.getOwnBox()
+					.getDiaaboveleft().getStatus() == BoxStatus.active) {
+				visitor.incrementTempCollisionCounter();
+			}
+		}
+		if (visitor.getOwnBox()
+				.getDiaaboveright() != null) {
+			if (visitor.getOwnBox()
+					.getDiaaboveright().getStatus() == BoxStatus.active) {
+				visitor.incrementTempCollisionCounter();
+			}
+		}
+		if (visitor.getOwnBox()
+				.getDiabelowleft() != null) {
+			if (visitor.getOwnBox()
+					.getDiabelowleft().getStatus() == BoxStatus.active) {
+				visitor.incrementTempCollisionCounter();
+			}
+		}
+		if (visitor.getOwnBox()
+				.getDiabelowright() != null) {
+			if (visitor.getOwnBox()
+					.getDiabelowright().getStatus() == BoxStatus.active) {
+				visitor.incrementTempCollisionCounter();
+			}
+		}
 		if (visitor.getOwnBox().getNextBox().getId() != nullBox) {
 			if (visitor.getOwnBox()
 					.getNextBox().getStatus() == BoxStatus.active) {
@@ -293,5 +293,14 @@ public class Controller {
 	 */
 	public String printAllFocusVisitors() {
 		return gym.printAllFocusVisitors();
+	}
+	
+	//use for testing
+	public int averageOfCollision() {
+		int counter = 0;
+		for (Visitor visitor : gym.getAllFocusVisitors()) {
+			counter+= visitor.getCollisionCounter();
+		}
+		return counter;
 	}
 }
