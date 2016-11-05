@@ -15,15 +15,15 @@ public class Main {
 		short timeSlotsperDay = 4320;
 
 		// number of days; how often the focus person'll visit the gym 
-		short days = 10;
+		short days = 1000;
 
-		// get an array of all durations
+		// get an array of all
 		int[] allvisits = new int[50127];
 		BufferedReader reader;
 		int counter = 0;
 		try {
 			reader = new BufferedReader(new FileReader(new File(
-					"/home/jayjah/Schreibtisch/Belegungszeiten.txt")));
+					"src/resources/Belegungszeiten.txt")));
 			while (reader.readLine() != null) {
 				String line = reader.readLine();
 				String[] array = line.split(" ");
@@ -46,8 +46,6 @@ public class Main {
 		Controller controll = new Controller(possibilityOfaVisitor, boxes,
 				timeSlotsperDay, days, allvisits);
 		controll.letTheSimulationRun();
-		
-		System.out.print(controll.printAllFocusVisitors());
 		
 		// Endpoint of simulation
 		long endPoint = System.currentTimeMillis();
