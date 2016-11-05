@@ -1,12 +1,13 @@
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Scheduler {
 
 	//The list for boxes that can be given to visitors
-	private ArrayList<Box> possibleBoxes;
+	private LinkedList<Box> possibleBoxes;
 	
 	//All the boxes that are either blocked or in use
-	private ArrayList<Box> blockedBoxes;
+	private LinkedList<Box> blockedBoxes;
 	
 	//The next possible box
 	private Box nextPossibleBox;
@@ -14,9 +15,9 @@ public class Scheduler {
 	//Current index
 	
 	//For init of scheduler: Put all boxes in the constructor.
-	public Scheduler(ArrayList<Box> allBoxes){
+	public Scheduler(LinkedList<Box> allBoxes){
 		this.possibleBoxes=allBoxes;
-		this.blockedBoxes=new ArrayList<Box>();
+		this.blockedBoxes=new LinkedList<Box>();
 		this.nextPossibleBox=allBoxes.get(0);
 	}
 	

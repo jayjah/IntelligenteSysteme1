@@ -42,6 +42,8 @@ public class Controller {
 	 * Hold the gym
 	 */
 	private Gym gym;
+	
+	private Scheduler scheduler;
 
 	/**
 	 * Constructor
@@ -54,6 +56,9 @@ public class Controller {
 		this.days = days;
 		this.allVisits = visits;
 		this.gym = new Gym(boxes,days);
+		
+		//init scheduler
+		this.scheduler=new Scheduler(this.gym.getAllFreeBoxes());
 	}
 
 	/**
@@ -75,7 +80,16 @@ public class Controller {
 				double nextvisitor = random.nextDouble();
 				// weather nextvisitor is a visitor or not
 				if (nextvisitor <= 0.1) {
-					Box boxfornextvisitor = getNextRandomBox();
+					
+					
+					//Box boxfornextvisitor = getNextRandomBox();
+						
+						//Integrated scheduler
+						Box boxfornextvisitor=this.scheduler.getNextBox();
+						this.scheduler.work();
+					
+					
+					
 					if (boxfornextvisitor != null) {
 						int durationfornextvisitor = getNextRandomDurationofVisitor();
 						boolean isfocus = isThisVisitoronFocus(currentslot);
