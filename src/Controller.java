@@ -34,15 +34,10 @@ public class Controller {
 	private int[] allVisits;
 
 	/**
-	 * Random Generator
-	 */
-	private static Random random = new Random();
-
-	/**
 	 * Hold the gym
 	 */
 	private Gym gym;
-	
+
 	private Scheduler scheduler;
 
 	/**
@@ -55,10 +50,8 @@ public class Controller {
 		this.timeSlotsperDay = timeslots;
 		this.days = days;
 		this.allVisits = visits;
-		this.gym = new Gym(boxes,days);
-		
-		//init scheduler
-		this.scheduler=new Scheduler(this.gym.getAllFreeBoxes());
+		this.gym = new Gym(boxes, days);
+		this.scheduler = new Scheduler(this.gym.getAllFreeBoxes());
 	}
 
 	/**
@@ -77,48 +70,50 @@ public class Controller {
 			int idfornextuser = 0;
 			// simulation for each timeslot
 			for (int currentslot = 0; currentslot < this.timeSlotsperDay; currentslot++) {
-				double nextvisitor = random.nextDouble();
+				double nextvisitor = scheduler.random.nextDouble();
 				// weather nextvisitor is a visitor or not
 				if (nextvisitor <= 0.1) {
-					
-					
-					//Box boxfornextvisitor = getNextRandomBox();
-						
-						//Integrated scheduler
-						Box boxfornextvisitor=this.scheduler.getNextBox();
-						this.scheduler.work();
-					
-					
-					
+
+//					Box boxfornextvisitor = getNextRandomBox();
+
+					// Integrated scheduler
+					int durationfornextvisitor = getNextRandomDurationofVisitor();
+					Box boxfornextvisitor = this.scheduler.getNextBox(durationfornextvisitor);
+					this.scheduler.work();
+
 					if (boxfornextvisitor != null) {
-						int durationfornextvisitor = getNextRandomDurationofVisitor();
+						this.scheduler.blockedBoxCounter++;
+						boxfornextvisitor.setStatus(BoxStatus.active);
+						
 						boolean isfocus = isThisVisitoronFocus(currentslot);
 						Visitor visitor = new Visitor(idfornextuser,
 								boxfornextvisitor, durationfornextvisitor,
 								isfocus);
 						gym.getAllVisitors().add(visitor);
-						if (visitor.getFocus()) 
+						if (visitor.getFocus())
 							gym.setFocusVisitorwasHere(true);
 						idfornextuser++;
 						// Prints
-//						if (visitor.getFocus()) 
-//							System.out.println(visitor);
-//						System.out.println("On Day: " + day + "; On TimeSlot: "
-//								+ currentslot + "; New Visitor: "
-//								+ visitor.toString());
-//						System.out.println("Length of Blocked Box List: "
-//								+ gym.getAllBlockedBoxes().size());
-//						System.out.println("Length of Free Box List: "
-//								+ gym.allFreeBoxes().size());
-//						int sizeofboth = gym.getAllBlockedBoxes().size()
-//								+ gym.allFreeBoxes().size();
-//						System.out.println("Length of Box is: " + sizeofboth
-//								+ " and should be: " + allBoxes);
+						// if (visitor.getFocus())
+						// System.out.println(visitor);
+						// System.out.println("On Day: " + day +
+						// "; On TimeSlot: "
+						// + currentslot + "; New Visitor: "
+						// + visitor.toString());
+						// System.out.println("Length of Blocked Box List: "
+						// + gym.getAllBlockedBoxes().size());
+						// System.out.println("Length of Free Box List: "
+						// + gym.allFreeBoxes().size());
+						// int sizeofboth = gym.getAllBlockedBoxes().size()
+						// + gym.allFreeBoxes().size();
+						// System.out.println("Length of Box is: " + sizeofboth
+						// + " and should be: " + allBoxes);
 					}
 				}
 				simulateTimeinGym();
 			}
-			gym.afterDay();
+			gym.setFocusVisitorwasHere(false);
+			scheduler.resetAfterDay();
 		}
 	}
 
@@ -133,7 +128,9 @@ public class Controller {
 					- gym.getAllVisitors().get(i).getDuration() == 30) {
 				gym.getAllVisitors().get(i).getOwnBox()
 						.setStatus(BoxStatus.taken);
-				if (gym.getAllVisitors().get(i).getFocus() && gym.getAllVisitors().get(i).getTempCollisionCounter() > 0) {
+				if (gym.getAllVisitors().get(i).getFocus()
+						&& gym.getAllVisitors().get(i)
+								.getTempCollisionCounter() > 0) {
 					gym.getAllVisitors().get(i).incrementCollision();
 					gym.getAllVisitors().get(i).resetTempCollisionCounter();
 				}
@@ -147,87 +144,31 @@ public class Controller {
 			if (gym.getAllVisitors().get(i).getDuration() == 1) {
 				gym.getAllVisitors().get(i).getOwnBox()
 						.setStatus(BoxStatus.free);
-				if (gym.getAllVisitors().get(i).getFocus() && gym.getAllVisitors().get(i).getTempCollisionCounter() > 0) {
+				this.scheduler.blockedBoxCounter--;
+				if (gym.getAllVisitors().get(i).getFocus()
+						&& gym.getAllVisitors().get(i)
+								.getTempCollisionCounter() > 0) {
 					gym.getAllVisitors().get(i).incrementCollision();
 				}
 				if (gym.getAllVisitors().get(i).getFocus()) {
 					gym.getAllFocusVisitors().add(gym.getAllVisitors().get(i));
 				}
-				gym.getAllBlockedBoxes().remove(
-						gym.getAllVisitors().get(i).getOwnBox());
-				gym.getAllFreeBoxes().add(gym.getAllVisitors().get(i).getOwnBox());
+				// gym.getAllBlockedBoxes().remove(
+				// gym.getAllVisitors().get(i).getOwnBox());
+				// gym.getAllFreeBoxes().add(gym.getAllVisitors().get(i).getOwnBox());
 				gym.getAllVisitors().remove(i);
 			} else {
-				// if focus is true and boxstatus == active
+				// check for collision and decrement Duration, if Visitor is the
+				// Focusvisitor
 				if (gym.getAllVisitors().get(i).getFocus()
 						&& gym.getAllVisitors().get(i).getOwnBox().getStatus() == BoxStatus.active) {
-					checkAndsetCollision(gym.getAllVisitors().get(i));
+					if (gym.getAllVisitors().get(i).getOwnBox().checkNeighboursForCollision()) {
+						gym.getAllVisitors().get(i).incrementTempCollisionCounter();
+					}
 					gym.getAllVisitors().get(i).decrementDuration();
 				} else {
 					gym.getAllVisitors().get(i).decrementDuration();
 				}
-			}
-		}
-	}
-	
-	//TODO fix NullPointerException, maybe causes because the initialization of the
-	// neighbor boxes failed, see in Gym.initializeBoxes()
-	/**
-	 * Check if a neighbour box of this visitor got a the BoxStatus.active
-	 * @param visitor 
-	 */
-	private void checkAndsetCollision(Visitor visitor) {
-		int nullBox = 9999;
-		if (visitor.getOwnBox().getAbove().getId() != nullBox) {
-			if (visitor.getOwnBox().getAbove()
-					.getStatus() == BoxStatus.active) {
-				visitor.incrementTempCollisionCounter();
-			}
-		}
-		if (visitor.getOwnBox().getBelow().getId() != nullBox) {
-			if (visitor.getOwnBox().getBelow()
-					.getStatus() == BoxStatus.active) {
-				visitor.incrementTempCollisionCounter();
-			}
-		}
-		if (visitor.getOwnBox()
-				.getDiaaboveleft() != null) {
-			if (visitor.getOwnBox()
-					.getDiaaboveleft().getStatus() == BoxStatus.active) {
-				visitor.incrementTempCollisionCounter();
-			}
-		}
-		if (visitor.getOwnBox()
-				.getDiaaboveright() != null) {
-			if (visitor.getOwnBox()
-					.getDiaaboveright().getStatus() == BoxStatus.active) {
-				visitor.incrementTempCollisionCounter();
-			}
-		}
-		if (visitor.getOwnBox()
-				.getDiabelowleft() != null) {
-			if (visitor.getOwnBox()
-					.getDiabelowleft().getStatus() == BoxStatus.active) {
-				visitor.incrementTempCollisionCounter();
-			}
-		}
-		if (visitor.getOwnBox()
-				.getDiabelowright() != null) {
-			if (visitor.getOwnBox()
-					.getDiabelowright().getStatus() == BoxStatus.active) {
-				visitor.incrementTempCollisionCounter();
-			}
-		}
-		if (visitor.getOwnBox().getNextBox().getId() != nullBox) {
-			if (visitor.getOwnBox()
-					.getNextBox().getStatus() == BoxStatus.active) {
-				visitor.incrementTempCollisionCounter();
-			}
-		}
-		if (visitor.getOwnBox().getPrevBox().getId() != nullBox) {
-			if (visitor.getOwnBox()
-					.getPrevBox().getStatus() == BoxStatus.active) {
-				visitor.incrementTempCollisionCounter();
 			}
 		}
 	}
@@ -258,62 +199,30 @@ public class Controller {
 			return false;
 	}
 
-	// TODO Implement an own idea to chose the perfect box for the current
-	// visitor
-	/**
-	 * 
-	 * @return Box
-	 */
-	private Box getNextBox() {
-		return null;
-	}
-
-	/**
-	 * Get the next Random Box, which is free to take and gives it back Add the
-	 * Box in gym.allBlockedBoxes and removes from gym.allFreeBoxes Add the
-	 * right BoxStatus of the returns box
-	 * 
-	 * @return Box
-	 */
-	private Box getNextRandomBox() {
-		if (gym.getAllFreeBoxes().size() > 0) {
-			int maybenextbox = random.nextInt(allBoxes);
-			for (int i = 0; i < gym.getAllFreeBoxes().size(); i++) {
-				if (gym.getAllFreeBoxes().get(i).getId() == maybenextbox) {
-					gym.getAllFreeBoxes().get(i).setStatus(BoxStatus.active);
-					gym.getAllBlockedBoxes().add(gym.getAllFreeBoxes().get(i));
-					Box randomBox = gym.getAllFreeBoxes().get(i);
-					gym.getAllFreeBoxes().remove(i);
-					return randomBox;
-				}
-			}
-		}
-		return null;
-	}
-
 	/**
 	 * Get a Random Duration out of the allVisits Array
 	 * 
 	 * @return duration of a Visitor
 	 */
 	private int getNextRandomDurationofVisitor() {
-		int duration = random.nextInt(allVisits.length);
+		int duration = scheduler.random.nextInt(allVisits.length);
 		return allVisits[duration];
 	}
-	
+
 	/**
-	 * Retrieves  allFocusVisitors in a string; Use for printing
+	 * Retrieves allFocusVisitors in a string; Use for printing
+	 * 
 	 * @return allFocusVisitors
 	 */
 	public String printAllFocusVisitors() {
 		return gym.printAllFocusVisitors();
 	}
-	
-	//use for testing
+
+	// use for testing
 	public int averageOfCollision() {
 		int counter = 0;
 		for (Visitor visitor : gym.getAllFocusVisitors()) {
-			counter+= visitor.getCollisionCounter();
+			counter += visitor.getCollisionCounter();
 		}
 		return counter;
 	}

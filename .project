@@ -14,11 +14,4 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>src/resources/Belegungszeiten.txt</name>
-			<type>1</type>
-			<location>C:/Users/RbR/Documents/GitHub/IntelligenteSysteme1/src/resources/Belegungszeiten.txt</location>
-		</link>
-	</linkedResources>
 </projectDescription>

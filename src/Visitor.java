@@ -16,15 +16,7 @@ public class Visitor {
 	 */
 	private Box ownBox;
 
-	/**
-	 * Duration of how long the Visitor'll be in gym, this'll be decrement
-	 */
-	private int duration;
 	
-	/**
-	 * Duration of how long the Visitor'll be in gym
-	 */
-	private int originDuration;
 
 	/**
 	 * Weather it's the focusperson or not
@@ -55,8 +47,8 @@ public class Visitor {
 	public Visitor(int id, Box box, int duration, boolean focus) {
 		this.id = id;
 		this.ownBox = box;
-		this.duration = duration*minutesTotimeslots;
-		this.originDuration = duration*minutesTotimeslots;
+		this.ownBox.setDuration(duration*minutesTotimeslots);
+		this.ownBox.setOriginDuration(duration*minutesTotimeslots);
 		this.gotTheFocus = focus;
 		this.collision = 0;
 		this.tempCollisionCounter = 0;
@@ -118,7 +110,7 @@ public class Visitor {
 	 * @return duration
 	 */
 	public int getDuration() {
-		return duration;
+		return this.ownBox.getDuration();
 	}
 	
 	/**
@@ -127,7 +119,7 @@ public class Visitor {
 	 * @return originDuration
 	 */
 	public int getOriginDuration() {
-		return originDuration;
+		return this.ownBox.getOriginDuration();
 	}
 	
 	/**
@@ -136,7 +128,7 @@ public class Visitor {
 	 * @param duration
 	 */
 	public void decrementDuration() {
-		this.duration--;
+		this.ownBox.setDuration(this.ownBox.getDuration()-1);
 	}
 	
 	/**

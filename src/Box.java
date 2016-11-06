@@ -6,7 +6,162 @@
  * 
  */
 public class Box {
+	/**
+	 * Duration of how long the Visitor'll be in gym, this'll be decrement
+	 */
+	private int duration;
+	public boolean checkNeighboursForCollision(){
+		if (this.getAbove() != null) {
+			if (this.getAbove().getStatus() == BoxStatus.active) {
+				return true;
+			}
+		}
+		if (this.getBelow() != null) {
+			if (this.getBelow().getStatus() == BoxStatus.active) {
+				return true;
+			}
+		}
+		if (this.getDiaaboveleft() != null) {
+			if (this.getDiaaboveleft().getStatus() == BoxStatus.active) {
+				return true;
+			}
+		}
+		if (this.getDiaaboveright() != null) {
+			if (this.getDiaaboveright().getStatus() == BoxStatus.active) {
+				return true;
+			}
+		}
+		if (this.getDiabelowleft() != null) {
+			if (this.getDiabelowleft().getStatus() == BoxStatus.active) {
+				return 	true;
+			}
+		}
+		if (this.getDiabelowright() != null) {
+			if (this.getDiabelowright().getStatus() == BoxStatus.active) {
+				return true;
+			}
+		}
+		if (this.getNextBox() != null) {
+			if (this.getNextBox().getStatus() == BoxStatus.active) {
+				return 	true;
+			}
+		}
+		if (this.getPrevBox() != null) {
+			if (this.getPrevBox().getStatus() == BoxStatus.active) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean checkNeighboursForCollisionFirstPeriod(){
+		if (this.getAbove() != null) {
+			if (this.getAbove().getDuration() < 30) {
+				return true;
+			}
+		}
+		if (this.getBelow() != null) {
+			if (this.getBelow().getDuration() < 30) {
+				return true;
+			}
+		}
+		if (this.getDiaaboveleft() != null) {
+			if (this.getDiaaboveleft().getDuration() < 30) {
+				return true;
+			}
+		}
+		if (this.getDiaaboveright() != null) {
+			if (this.getDiaaboveright().getDuration() < 30) {
+				return true;
+			}
+		}
+		if (this.getDiabelowleft() != null) {
+			if (this.getDiabelowleft().getDuration() < 30) {
+				return 	true;
+			}
+		}
+		if (this.getDiabelowright() != null) {
+			if (this.getDiabelowright().getDuration() < 30) {
+				return true;
+			}
+		}
+		if (this.getNextBox() != null) {
+			if (this.getNextBox().getDuration() < 30) {
+				return 	true;
+			}
+		}
+		if (this.getPrevBox() != null) {
+			if (this.getPrevBox().getDuration() < 30) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean checkNeighboursForCollisionSecondPeriod(int duration){
+		if (this.getAbove() != null) {
+			if (this.getAbove().getDuration() - duration >=-30 && this.getAbove().getDuration() - duration <=30) {
+				return true;
+			}
+		}
+		if (this.getBelow() != null) {
+			if (this.getBelow().getDuration() - duration >=-30 && this.getBelow().getDuration() - duration <=30) {
+				return true;
+			}
+		}
+		if (this.getDiaaboveleft() != null) {
+			if (this.getDiaaboveleft().getDuration() - duration >=-30 && this.getDiaaboveleft().getDuration() - duration <=30) {
+				return true;
+			}
+		}
+		if (this.getDiaaboveright() != null) {
+			if (this.getDiaaboveright().getDuration() - duration >=-30 && this.getDiaaboveright().getDuration() - duration <=30) {
+				return true;
+			}
+		}
+		if (this.getDiabelowleft() != null) {
+			if (this.getDiabelowleft().getDuration() - duration >=-30 && this.getDiabelowleft().getDuration() - duration <=30) {
+				return 	true;
+			}
+		}
+		if (this.getDiabelowright() != null) {
+			if (this.getDiabelowright().getDuration() - duration >=-30 && this.getDiabelowright().getDuration() - duration <=30) {
+				return true;
+			}
+		}
+		if (this.getNextBox() != null) {
+			if (this.getNextBox().getDuration() - duration >=-30 && this.getNextBox().getDuration() - duration <=30) {
+				return 	true;
+			}
+		}
+		if (this.getPrevBox() != null) {
+			if (this.getPrevBox().getDuration() - duration >=-30 && this.getPrevBox().getDuration() - duration <=30) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public int getDuration() {
+		return duration;
+	}
 
+	public void setDuration(int duration) {
+		this.duration = duration;
+	}
+
+	public int getOriginDuration() {
+		return originDuration;
+	}
+
+	public void setOriginDuration(int originDuration) {
+		this.originDuration = originDuration;
+	}
+
+	/**
+	 * Duration of how long the Visitor'll be in gym
+	 */
+	private int originDuration;
 	/**
 	 * Defines the status of the box
 	 */
@@ -46,14 +201,6 @@ public class Box {
 	public Box(int id, BoxStatus status) {
 		this.id = id;
 		this.status = status;
-	}
-	
-	/**
-	 * Null Constructor
-	 * @param id = 9999 (null Value)
-	 */
-	public Box(int id) {
-		this.id = id;
 	}
 
 	/**
@@ -126,6 +273,8 @@ public class Box {
 	 * @return above.right
 	 */
 	public Box getDiaaboveright() {
+		if(above==null)
+			return null;
 		return above.getNextBox();
 	}
 
@@ -135,6 +284,8 @@ public class Box {
 	 * @return above.left
 	 */
 	public Box getDiaaboveleft() {
+		if(above==null)
+			return null;
 		return above.getPrevBox();
 	}
 
@@ -144,6 +295,8 @@ public class Box {
 	 * @return below.right
 	 */
 	public Box getDiabelowright() {
+		if(below==null)
+			return null;
 		return below.getNextBox();
 	}
 
@@ -153,6 +306,8 @@ public class Box {
 	 * @return below.left
 	 */
 	public Box getDiabelowleft() {
+		if(below==null)
+			return null;
 		return below.getPrevBox();
 	}
 

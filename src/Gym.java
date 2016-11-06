@@ -14,11 +14,6 @@ public class Gym {
 	private LinkedList<Box> allFreeBoxes;
 
 	/**
-	 * List of blocked Boxes
-	 */
-	private LinkedList<Box> allBlockedBoxes;
-
-	/**
 	 * Holds all Visitors who visits the Gym
 	 */
 	private LinkedList<Visitor> allVisitors;
@@ -39,7 +34,6 @@ public class Gym {
 	 */
 	public Gym(short allBoxes, short days) {
 		this.allFreeBoxes = new LinkedList<Box>();
-		this.allBlockedBoxes = new LinkedList<Box>();
 		this.allVisitors = new LinkedList<Visitor>();
 		this.allFocusVisitors = new LinkedList<Visitor>();
 		this.focusVisitorwasHere = false;
@@ -62,39 +56,39 @@ public class Gym {
 		for (int i = 0; i < allBoxes; i++) {
 			//first Box
 			if (getAllFreeBoxes().get(i).getId() == 0) {
-				getAllFreeBoxes().get(i).setAbove(new Box(9999));
+				getAllFreeBoxes().get(i).setAbove(null);
 				getAllFreeBoxes().get(i).setBelow(getAllFreeBoxes().get(allBoxes/2));
-				getAllFreeBoxes().get(i).setPrevBox(new Box(9999));
+				getAllFreeBoxes().get(i).setPrevBox(null);
 				getAllFreeBoxes().get(i).setNextBox(getAllFreeBoxes().get(i+1));
 				continue;
 			}
 			//last Box
 			if (getAllFreeBoxes().get(i).getId() == allBoxes-1) {
 				getAllFreeBoxes().get(i).setAbove(getAllFreeBoxes().get(allBoxes/2-1));
-				getAllFreeBoxes().get(i).setBelow(new Box(9999));
+				getAllFreeBoxes().get(i).setBelow(null);
 				getAllFreeBoxes().get(i).setPrevBox(getAllFreeBoxes().get(i-1));
-				getAllFreeBoxes().get(i).setNextBox(new Box(9999));
+				getAllFreeBoxes().get(i).setNextBox(null);
 				continue;
 			}
 			//last Box in first row
 			if (getAllFreeBoxes().get(i).getId() == allBoxes/2-1) {
-				getAllFreeBoxes().get(i).setAbove(new Box(9999));
+				getAllFreeBoxes().get(i).setAbove(null);
 				getAllFreeBoxes().get(i).setBelow(getAllFreeBoxes().get(allBoxes-1));
 				getAllFreeBoxes().get(i).setPrevBox(getAllFreeBoxes().get(i-1));
-				getAllFreeBoxes().get(i).setNextBox(new Box(9999));
+				getAllFreeBoxes().get(i).setNextBox(null);
 				continue;
 			}
 			//first Box in second row
 			if (getAllFreeBoxes().get(i).getId() == allBoxes/2) {
 				getAllFreeBoxes().get(i).setAbove(getAllFreeBoxes().get(0));
-				getAllFreeBoxes().get(i).setBelow(new Box(9999));
-				getAllFreeBoxes().get(i).setPrevBox(new Box(9999));
+				getAllFreeBoxes().get(i).setBelow(null);
+				getAllFreeBoxes().get(i).setPrevBox(null);
 				getAllFreeBoxes().get(i).setNextBox(getAllFreeBoxes().get(i+1));
 				continue;
 			}
 			//boxes in first row
 			if (getAllFreeBoxes().get(i).getId() < allBoxes/2) {
-				getAllFreeBoxes().get(i).setAbove(new Box(9999));
+				getAllFreeBoxes().get(i).setAbove(null);
 				getAllFreeBoxes().get(i).setBelow(getAllFreeBoxes().get(allBoxes/2+i));
 				getAllFreeBoxes().get(i).setPrevBox(getAllFreeBoxes().get(i-1));
 				getAllFreeBoxes().get(i).setNextBox(getAllFreeBoxes().get(i+1));
@@ -103,27 +97,12 @@ public class Gym {
 			//boxes in second row
 			if (getAllFreeBoxes().get(i).getId() >= allBoxes/2) {
 				getAllFreeBoxes().get(i).setAbove(getAllFreeBoxes().get(i-allBoxes/2));
-				getAllFreeBoxes().get(i).setBelow(new Box(9999));
+				getAllFreeBoxes().get(i).setBelow(null);
 				getAllFreeBoxes().get(i).setPrevBox(getAllFreeBoxes().get(i-1));
 				getAllFreeBoxes().get(i).setNextBox(getAllFreeBoxes().get(i+1));
 				continue;
 			}
 		}
-	}
-	
-	/**
-	 * Resets allVisitors and allBlockedBoxes and allFreeBoxes to initial point
-	 */
-	public void afterDay() {
-		for (int i = 0; i<allVisitors.size(); i++) {
-			allVisitors.remove(i);
-		}
-		for (int i = 0; i<allBlockedBoxes.size(); i++) {
-			allBlockedBoxes.get(i).setStatus(BoxStatus.free);
-			allFreeBoxes.add(allBlockedBoxes.get(i));
-			allBlockedBoxes.remove(i);
-		}
-		setFocusVisitorwasHere(false);
 	}
 	
 	/**
@@ -171,14 +150,6 @@ public class Gym {
 		return allFreeBoxes;
 	}
 
-	/**
-	 * Getter
-	 * 
-	 * @return allBlockedBoxes
-	 */
-	public LinkedList<Box> getAllBlockedBoxes() {
-		return allBlockedBoxes;
-	}
 	
 	/**
 	 * Retrieves  allFocusVisitors in a string; Use for printing

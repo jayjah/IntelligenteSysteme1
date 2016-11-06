@@ -50,7 +50,7 @@ public class Main {
 		
 		System.out.println(controll.printAllFocusVisitors());
 		System.out.println("Added all Collisions: " + controll.averageOfCollision());
-		
+		System.out.println("Durchschnitt: " + (double)((double)controll.averageOfCollision()/(double)days));
 		// Endpoint of simulation
 		long endPoint = System.currentTimeMillis();
 		System.out.println("\nEnded at: " + endPoint);
