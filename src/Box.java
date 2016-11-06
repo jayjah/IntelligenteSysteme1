@@ -10,6 +10,10 @@ public class Box {
 	 * Duration of how long the Visitor'll be in gym, this'll be decrement
 	 */
 	private int duration;
+	
+	/**
+	 * Check all neighbours for a collision with this box and return true as soon as one happens; false if not.
+	 */
 	public boolean checkNeighboursForCollision(){
 		if (this.getAbove() != null) {
 			if (this.getAbove().getStatus() == BoxStatus.active) {
@@ -54,6 +58,10 @@ public class Box {
 		return false;
 	}
 	
+	
+	/**
+	 * Same as checkNeighbouersForCollision but checks within the 5-Minutes period of the visitors.
+	 */
 	public boolean checkNeighboursForCollisionFirstPeriod(){
 		if (this.getAbove() != null) {
 			if (this.getAbove().getDuration() < 30) {
@@ -98,6 +106,10 @@ public class Box {
 		return false;
 	}
 	
+	
+	/**
+	 * Same as checkNeighbouersForCollision but checks for collisions at the end-cycles of the neighbour box
+	 */
 	public boolean checkNeighboursForCollisionSecondPeriod(int duration){
 		if (this.getAbove() != null) {
 			if (this.getAbove().getDuration() - duration >=-30 && this.getAbove().getDuration() - duration <=30) {
@@ -142,18 +154,38 @@ public class Box {
 		return false;
 	}
 	
+	/**
+	 * Getter
+	 * 
+	 * @returns duration
+	 */
 	public int getDuration() {
 		return duration;
 	}
 
+	/**
+	 * Setter
+	 * 
+	 * @param duration
+	 */
 	public void setDuration(int duration) {
 		this.duration = duration;
 	}
 
+	/**
+	 * Getter
+	 * 
+	 * @returns originDuration
+	 */
 	public int getOriginDuration() {
 		return originDuration;
 	}
 
+	/**
+	 * Setter
+	 * 
+	 * @param originDuration
+	 */
 	public void setOriginDuration(int originDuration) {
 		this.originDuration = originDuration;
 	}

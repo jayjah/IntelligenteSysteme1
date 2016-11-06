@@ -1,12 +1,25 @@
+/**
+ * This class represents the scheduler for choosing boxes
+ * 
+ * @author Markus, Kim
+ * 
+ */
+
 import java.util.LinkedList;
 import java.util.Random;
 
 public class Scheduler {
 
-	// The list for boxes that can be given to visitors
+	
+	 
+	/** 
+	 * The list for boxes that can be given to visitors
+	 */
 	private LinkedList<Box> possibleBoxes;
 
-	// The next possible box
+	/**
+	 *  The next possible box
+	 */
 	private Box nextPossibleBox;
 
 	/**
@@ -16,20 +29,27 @@ public class Scheduler {
 
 	public int blockedBoxCounter = 0;
 
-	// Current index
+	/**
+	 *  Current index
+	 */
 
-	// For init of scheduler: Put all boxes in the constructor.
+	/**
+	 *  For init of scheduler: Put all boxes in the constructor.
+	 * @param allBoxes
+	 */
 	public Scheduler(LinkedList<Box> allBoxes) {
 		this.possibleBoxes = allBoxes;
 		this.nextPossibleBox = allBoxes.get(0);
 	}
 
-	// Main method, called every cycle and does the main work for the scheduler
+	/** 
+	 * Main method, called every cycle and does the main work for the scheduler
+	 */
 	public void work() {
 
 		// Simple round robin without blocked list:
 
-		// get first process in list
+		//get first process in list
 		this.nextPossibleBox = this.possibleBoxes.get(0);
 
 		// remove that process from list
@@ -40,27 +60,30 @@ public class Scheduler {
 
 	}
 
-	// Return the next possible box
+	/** 
+	 * Return the next possible box
+	 */
 	public Box getNextBox() {
 		if (this.blockedBoxCounter == this.possibleBoxes.size())
 			return null;
 		return this.getNextRandomBox();
-		// return this.nextPossibleBox;
 	}
 
 	public Box getNextBox(int duration) {
 		if (this.blockedBoxCounter == this.possibleBoxes.size())
 			return null;
-		// return this.getNextRandomBox();
 
 		Box nextbox = this.predictSort(duration);
 		if (nextbox == null) {
 			return getNextRandomBox();
 		}
 		return nextbox;
-		// return this.nextPossibleBox;
-	}
 
+	}
+	
+	/** 
+	 * Return the best predicted box
+	 */
 	private Box predictSort(int duration) {
 		for (int i = 0; i < 3; i++) {
 			for (Box box : possibleBoxes) {
